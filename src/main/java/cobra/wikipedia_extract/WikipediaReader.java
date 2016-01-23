@@ -3,6 +3,7 @@ package cobra.wikipedia_extract;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
+import java.util.Iterator;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -12,28 +13,36 @@ import javax.xml.stream.XMLStreamReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import cobra.wikipedia_extract.batch.WikiSplit;
-
-public class WikipediaReader {
+/**
+ * <p>An Iterator over the Wikipedia XML Dump. Returns an Article object per acceptable page.
+ * Not thread-safe.</p>
+ * @author Steve Carton (stephen.e.carton@usdoj.gov)
+ * Jan 15, 2016
+ *
+ */
+public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 	private final static Logger logger = LoggerFactory.getLogger(WikipediaReader.class);
 	private XMLStreamReader reader;
+	private int LIMIT =  Integer.MAX_VALUE;
+	private int c = 0;
+	private boolean hasNext = true;
 
 	public WikipediaReader(File src) throws FileNotFoundException, XMLStreamException {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
 		reader = factory.createXMLStreamReader(new FileInputStream(src));
 	}
 
-	public Article parse4Articles() {
+	public Article next() {
 		Article currArticle = null;
-		StringBuilder tagContent = new StringBuilder();;
+		StringBuilder tagContent = new StringBuilder();
 		try {
-			while (reader.hasNext()) {
+			while (hasNext()) {
 				int event = reader.next();
 				switch (event) {
 				case XMLStreamConstants.START_ELEMENT:
 					tagContent = new StringBuilder();
 					if ("page".equals(reader.getLocalName())) {
-						currArticle = new Article();
+						currArticle = new Article(c++);
 					}
 					break;
 
@@ -45,13 +54,16 @@ public class WikipediaReader {
 				case XMLStreamConstants.END_ELEMENT:
 					switch (reader.getLocalName()) {
 					case "page":
-//						logger.debug("Returning article {}", currArticle.toString());
+						// logger.debug("Returning article {}",
+						// currArticle.toString());
+						if (c > LIMIT)
+							this.hasNext=false;
 						return currArticle;
 					case "ns":
 						currArticle.type = tagContent.toString();
 						break;
 					case "id":
-						currArticle.id = tagContent.toString();
+						currArticle.id = Integer.parseInt(tagContent.toString());
 						break;
 					case "title":
 						currArticle.title = tagContent.toString();
@@ -64,12 +76,34 @@ public class WikipediaReader {
 
 				case XMLStreamConstants.START_DOCUMENT:
 					break;
+				case XMLStreamConstants.END_DOCUMENT:
+					logger.debug("End of Document");
+					this.hasNext=false;
+					break;
 				}
 			}
 		} catch (XMLStreamException e) {
 			logger.error(e.getMessage());
 		}
-		return null;
+		return new Article();
 	}
 
+	public Iterator<Article> iterator() {
+		return this;
+	}
+
+	public boolean hasNext() {
+		boolean r = false;
+		try {
+			r = reader.hasNext();
+		} catch (XMLStreamException e) {
+			logger.error(e.getMessage());
+		}
+//		logger.debug("hasNext: {}",r);
+		return r&&this.hasNext;
+	}
+
+	public void setLIMIT(int lIMIT) {
+		LIMIT = lIMIT;
+	}
 }

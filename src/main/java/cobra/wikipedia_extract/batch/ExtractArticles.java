@@ -2,13 +2,9 @@ package cobra.wikipedia_extract.batch;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.StringWriter;
 
 import javax.xml.parsers.ParserConfigurationException;
 
-import org.eclipse.mylyn.wikitext.core.parser.DocumentBuilder;
-import org.eclipse.mylyn.wikitext.core.parser.MarkupParser;
-import org.eclipse.mylyn.wikitext.core.util.ServiceLocator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.wikipedia.miner.model.Article;
@@ -18,28 +14,27 @@ import org.wikipedia.miner.model.Wikipedia;
 import org.wikipedia.miner.util.PageIterator;
 import org.xml.sax.SAXException;
 
-import com.sleepycat.je.EnvironmentLockedException;
-
 import cobra.wikipedia_extract.WordExtractor;
 
+import com.sleepycat.je.EnvironmentLockedException;
+
+/**
+ * <p>Extracts article text and categories from Wikipedia-Miner DB</p>
+ * @author Steve Carton (stephen.e.carton@usdoj.gov)
+ * Jan 15, 2016
+ *
+ */
 public class ExtractArticles {
 	final static Logger logger = LoggerFactory.getLogger(ExtractArticles.class);
 	final static int INDEX_LIMIT = 5; // Integer.MAX_VALUE;
 
-	public String parseByLanguage(String wikiText) {
-
-		StringWriter writer = new StringWriter();
-		DocumentBuilder builder = new WordExtractor(writer);
-		MarkupParser parser = new MarkupParser(ServiceLocator.getInstance().getMarkupLanguage("MediaWiki"), builder);
-		parser.parse(wikiText);
-		return writer.toString();
-	}
-
 	public static void main(String[] args) throws EnvironmentLockedException, ClassNotFoundException,
 			InstantiationException, IllegalAccessException, ParserConfigurationException, SAXException, IOException {
-		ExtractArticles extractor = new ExtractArticles();
 		Wikipedia wikipedia = new Wikipedia(new File(args[0]), false);
 		logger.info("Article Browse Starting...");
+		File outP = new File(args[1]);
+		outP.mkdirs();
+		WordExtractor words = new WordExtractor(outP);
 		Category root = wikipedia.getRootCategory();
 		logger.debug("Root Category: {}", root.getTitle());
 		PageIterator it = wikipedia.getPageIterator(PageType.article);
@@ -55,7 +50,8 @@ public class ExtractArticles {
 			}
 			logger.debug("Categories: {}", sb.toString());
 			logger.debug("{}", p.getMarkup());
-			logger.debug("{}", extractor.parseByLanguage(p.getMarkup()));
+			words.parseByLanguage(p.getId(),p.getMarkup());
+			logger.debug("{}", words.getArticleText());
 		}
 		logger.info("Article Browse Ending...");
 	}
