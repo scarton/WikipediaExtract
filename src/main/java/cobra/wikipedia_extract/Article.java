@@ -87,6 +87,8 @@ public class Article {
 	public Article() {
 	}
 	public boolean keep() {
+		if (markup==null)
+			return false;
 		boolean cats = catPat.matcher(markup).matches();
 		boolean redir = excludeTest.matcher(markup).matches();
 //		logger.debug("{}: {}/{}",id,cats,redir);

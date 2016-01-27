@@ -1,5 +1,5 @@
-CPBASE="/cygdrive/c/Users/scarton/.m2/repository"
-CLASSPATH="/cygdrive/c/projects/WikipediaExtract/target/classes:\
+CPBASE="/home/steve/.m2/repository"
+CLASSPATH="/home/steve/projects/wikipedia-extract/target/classes:\
 $CPBASE/org/apache/spark/spark-core_2.10/1.6.0/spark-core_2.10-1.6.0.jar:\
 $CPBASE/org/apache/avro/avro-mapred/1.7.7/avro-mapred-1.7.7-hadoop2.jar:\
 $CPBASE/org/apache/avro/avro-ipc/1.7.7/avro-ipc-1.7.7.jar:\
