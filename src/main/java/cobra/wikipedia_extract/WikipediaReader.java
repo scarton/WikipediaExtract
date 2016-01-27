@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
+import java.util.Stack;
 
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
@@ -35,23 +36,27 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 	public Article next() {
 		Article currArticle = null;
 		StringBuilder tagContent = new StringBuilder();
+		Stack<String> parentage = new Stack<>();
 		try {
 			while (hasNext()) {
 				int event = reader.next();
 				switch (event) {
 				case XMLStreamConstants.START_ELEMENT:
 					tagContent = new StringBuilder();
+					parentage.push(reader.getLocalName());
 					if ("page".equals(reader.getLocalName())) {
 						currArticle = new Article(c++);
 					}
 					break;
 
 				case XMLStreamConstants.CHARACTERS:
-					String txt = reader.getText().trim();
+					String txt = reader.getText();
 					tagContent.append(txt);
 					break;
 
 				case XMLStreamConstants.END_ELEMENT:
+					if (parentage.size()>0)
+						parentage.pop();
 					switch (reader.getLocalName()) {
 					case "page":
 						// logger.debug("Returning article {}",
@@ -63,7 +68,10 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 						currArticle.type = tagContent.toString();
 						break;
 					case "id":
-						currArticle.id = Integer.parseInt(tagContent.toString());
+						if (parentage.peek().equals("page"))
+							currArticle.id = Integer.parseInt(tagContent.toString());
+//						else 
+//							logger.debug("Ignoring ID with parentage: {}",parentage);
 						break;
 					case "title":
 						currArticle.title = tagContent.toString();

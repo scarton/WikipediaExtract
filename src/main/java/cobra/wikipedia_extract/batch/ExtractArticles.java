@@ -14,7 +14,7 @@ import org.wikipedia.miner.model.Wikipedia;
 import org.wikipedia.miner.util.PageIterator;
 import org.xml.sax.SAXException;
 
-import cobra.wikipedia_extract.WordExtractor;
+import cobra.wikipedia_extract.WikiParser;
 
 import com.sleepycat.je.EnvironmentLockedException;
 
@@ -34,7 +34,7 @@ public class ExtractArticles {
 		logger.info("Article Browse Starting...");
 		File outP = new File(args[1]);
 		outP.mkdirs();
-		WordExtractor words = new WordExtractor(outP);
+		WikiParser words = new WikiParser(outP);
 		Category root = wikipedia.getRootCategory();
 		logger.debug("Root Category: {}", root.getTitle());
 		PageIterator it = wikipedia.getPageIterator(PageType.article);

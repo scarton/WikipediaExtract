@@ -1,5 +1,6 @@
 package cobra.wikipedia_extract;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -13,7 +14,25 @@ public class Article {
 	private static Pattern excludeTest = Pattern.compile("^#redirect.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private static Pattern catPat = Pattern.compile("^.*?category:.*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private static Map<String, String> types;
-	private WordExtractor stripper = new WordExtractor();
+	private WikiParser stripper = new WikiParser();
+	private static ArrayList<PatRep> prePatterns;
+	static {
+		prePatterns = new ArrayList<>();
+		prePatterns.add(new PatRep("(={2,6}.+={2,6})", "\n$1"));
+		prePatterns.add(new PatRep("\n{2,}", "\n"));
+		prePatterns.add(new PatRep("<.[^(><.)]+>", ""));
+		prePatterns.add(new PatRep("\\{\\{.+?\\}\\}", "", Pattern.DOTALL));
+	}
+	private static ArrayList<PatRep> postPatterns;
+	static {
+		postPatterns = new ArrayList<>();
+		postPatterns.add(new PatRep("'{2,}", ""));
+		postPatterns.add(new PatRep("\\[\\[", ""));
+		postPatterns.add(new PatRep("\\]\\]", ""));
+		postPatterns.add(new PatRep("\\n{2,}", "\n",Pattern.DOTALL));
+//		postPatterns.add(new PatRep("\\{\\{.+$", ""));
+//		postPatterns.add(new PatRep("^.+\\}\\}", ""));
+	}
 
 	static {
 		types = new HashMap<>();
@@ -89,14 +108,20 @@ public class Article {
 	public String toString() {
 		return id + " " + title + " (" + type + ")";
 	}
-	public void clean() {
+	public void preParse() {
+		for (PatRep pr : prePatterns) {
+			this.markup = pr.p.matcher(this.markup).replaceAll(pr.r);
+		}
+	}
+	public void parse() {
 		stripper.parseByLanguage(id, this.markup);
 		this.text = stripper.getArticleText();
-		this.text = this.text.replaceAll("([A-Za-z0-9])\\s*([\\!@#\\$%\\^&\\*\\(\\)_\\+-=\\{\\}:\";'<>,\\.])", "$1$2");
-		this.text = this.text.replaceAll("'''", "");
-		this.text = this.text.replaceAll("''", "");
-		this.text = this.text.replaceAll("\\*", "");
 		this.categories=stripper.getCategories();
+	}
+	public void postParse() {
+		for (PatRep pr : postPatterns) {
+			this.text = pr.p.matcher(this.text).replaceAll(pr.r);
+		}
 	}
 	public void parseSentences() {
 		ParseSentences parser = new ParseSentences();
@@ -106,17 +131,20 @@ public class Article {
 		return id + ".txt";
 	}
 	public String out() {
-		this.clean();
+		this.preParse();
+		this.parse();
+		this.postParse();
 		return text;
 	}
-
 	public String sout() {
-		this.clean();
+		this.preParse();
+		this.parse();
+		this.postParse();
 		this.parseSentences();
-		StringBuilder sb = new StringBuilder(title+".\n\n");
+		StringBuilder sb = new StringBuilder(title+".\n");
 		for (String sent : sentences) {
 			if (sb.length() > 0)
-				sb.append("\n\n");
+				sb.append("\n");
 			sb.append(sent);
 		}
 		return sb.toString();

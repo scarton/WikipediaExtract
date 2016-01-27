@@ -1,7 +1,7 @@
 <configuration>
   <appender name="FILE" class="ch.qos.logback.core.FileAppender">
     <append>false</append>
-    <file>H:/logs/WikiExtractor.log</file>
+    <file>/home/Sharing/logs/WikiExtractor.log</file>
     <encoder>
       <pattern>%d{yyyyMMdd-HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     </encoder>

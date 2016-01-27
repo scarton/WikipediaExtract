@@ -24,11 +24,13 @@ import cobra.wikipedia_extract.WikipediaReader;
  */
 public class WikiSplit {
 	private final static Logger logger = LoggerFactory.getLogger(WikiSplit.class);
-	private static final int MAX = 10; //Integer.MAX_VALUE; 
+	private static final int MAX = Integer.MAX_VALUE; 
+//	private static final int MAX = 100;  
 	
 
 	public static void main(String[] args) throws XMLStreamException, IOException {
 		logger.info("Starting Wikipedia Extract {}", args[0]);
+		System.out.println("Starting Wikipedia Extract: " + args[0]);
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		File src = new File(args[0]);
@@ -47,9 +49,9 @@ public class WikiSplit {
 					IO.putContent(outF, p.sout());
 					if (p.counter%1000==0)
 						logger.info("{}",p.counter);
-					File moutF = new File(outP.getPath() + '/' + p.id + "mk.txt");
-					IO.putContent(moutF, p.markup);
-					File coutF = new File(outP.getPath() + '/' + p.id + "cat.txt");
+//					File moutF = new File(outP.getPath() + '/' + p.id + ".mk.txt");
+//					IO.putContent(moutF, p.markup);
+					File coutF = new File(outP.getPath() + '/' + p.id + ".cat.txt");
 					IO.putContent(coutF, p.getCategories());
 					c++;
 				} catch (Exception e) {
@@ -64,6 +66,7 @@ public class WikiSplit {
 		};
 		stopWatch.stop();
 		logger.info("Ended Wikipedia Extract... Elapsed Time: {}",DurationFormatUtils.formatDuration(stopWatch.getTime(), "HH:mm:ss.S"));
+		System.out.println("Ended Wikipedia Extract... Elapsed Time: "+DurationFormatUtils.formatDuration(stopWatch.getTime(), "HH:mm:ss.S"));
 
 	}
 

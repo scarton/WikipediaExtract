@@ -19,7 +19,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import cobra.wikipedia_extract.WikiWords;
-import cobra.wikipedia_extract.WordExtractor;
+import cobra.wikipedia_extract.WikiParser;
 
 public class WikiExtract {
 	private final static Logger logger = LoggerFactory
@@ -40,7 +40,7 @@ public class WikiExtract {
 		 File outP = new File(args[1]);
 		 outP.mkdirs();
 		Path dir = Paths.get(args[0]);
-		WikiWords words = new WordExtractor(outP);
+		WikiWords words = new WikiParser(outP);
 		logger.info("The file tree for {}", dir.toAbsolutePath());
 		try (Stream<Path> fileTree = Files.walk(dir).parallel()) {
 			fileTree.forEach(words::parseByLanguage);
