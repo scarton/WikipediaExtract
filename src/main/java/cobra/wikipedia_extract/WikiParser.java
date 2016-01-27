@@ -102,95 +102,95 @@ import org.slf4j.LoggerFactory;
 		
 		@Override
 		public void acronym(String text, String definition) {
-			logger.info("ACRONYM:" + text + "," + definition); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("ACRONYM:" + text + "," + definition); //$NON-NLS-1$ //$NON-NLS-2$
 		}
 
 		@Override
 		public void beginBlock(BlockType type, Attributes attributes) {
 			++blockDepth;
-			logger.info("BLOCK START[" + blockDepth + "]:" + type+" - "+attributes.getTitle()); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("BLOCK START[" + blockDepth + "]:" + type+" - "+attributes.getTitle()); //$NON-NLS-1$ //$NON-NLS-2$
 			this.addEOS();
 		}
 
 		@Override
 		public void beginDocument() {
-//			logger.info("DOCUMENT START"); //$NON-NLS-1$
+//			logger.debug("DOCUMENT START"); //$NON-NLS-1$
 			articleText = new StringBuilder(0);
 		}
 
 		@Override
 		public void beginHeading(int level, Attributes attributes) {
-			logger.info("HEADING START:" + level); //$NON-NLS-1$
+			logger.debug("HEADING START:" + level); //$NON-NLS-1$
 			this.addEOS();
 		}
 
 		@Override
 		public void beginSpan(SpanType type, Attributes attributes) {
-			logger.info("SPAN START:" + type); //$NON-NLS-1$
+			logger.debug("SPAN START:" + type); //$NON-NLS-1$
 		}
 
 		@Override
 		public void characters(String text) {
-			logger.info("CHARACTERS:" + text); //$NON-NLS-1$
+			logger.debug("CHARACTERS:" + text); //$NON-NLS-1$
 			articleText.append(text);
 		}
 
 		@Override
 		public void charactersUnescaped(String text) {
-			logger.info("HTML LITERAL:" + text); //$NON-NLS-1$
+			logger.debug("HTML LITERAL:" + text); //$NON-NLS-1$
 		}
 
 		@Override
 		public void endBlock() {
-			logger.info("END BLOCK[" + blockDepth + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("END BLOCK[" + blockDepth + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 			this.addEOS();
 			--blockDepth;
 		}
 
 		@Override
 		public void endDocument() {
-			logger.info("END DOCUMENT"); //$NON-NLS-1$
+			logger.debug("END DOCUMENT"); //$NON-NLS-1$
 		}
 
 		@Override
 		public void endHeading() {
-			logger.info("END HEADING"); //$NON-NLS-1$
+			logger.debug("END HEADING"); //$NON-NLS-1$
 			this.addEOS();
 		}
 
 		@Override
 		public void endSpan() {
-			logger.info("END SPAN"); //$NON-NLS-1$
+			logger.debug("END SPAN"); //$NON-NLS-1$
 		}
 
 		@Override
 		public void entityReference(String entity) {
-			logger.info("ENTITY: " + entity); //$NON-NLS-1$
+			logger.debug("ENTITY: " + entity); //$NON-NLS-1$
 			articleText.append((entities.containsKey(entity)?entities.get(entity):"#"+entity+"#"));
 		}
 
 		@Override
 		public void image(Attributes attributes, String url) {
-			logger.info("IMAGE: " + url); //$NON-NLS-1$
+			logger.debug("IMAGE: " + url); //$NON-NLS-1$
 		}
 
 		@Override
 		public void imageLink(Attributes linkAttributes, Attributes imageAttributes, String href, String imageUrl) {
-			logger.info("IMAGE LINK: " + href + ", " + imageUrl); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("IMAGE LINK: " + href + ", " + imageUrl); //$NON-NLS-1$ //$NON-NLS-2$
 
 		}
 
 		@Override
 		public void lineBreak() {
-			logger.info("LINE BREAK"); //$NON-NLS-1$
+			logger.debug("LINE BREAK"); //$NON-NLS-1$
 		}
 
 		@Override
 		public void link(Attributes attributes, String hrefOrHashName, String text) {
-			logger.info("LINK: "+text); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("LINK: "+text); //$NON-NLS-1$ //$NON-NLS-2$
 			String[] tk = text.split("\\|");
 			String ltext = tk[tk.length-1];
-			logger.info("Link Value: "+ltext); //$NON-NLS-1$ //$NON-NLS-2$
+			logger.debug("Link Value: "+ltext); //$NON-NLS-1$ //$NON-NLS-2$
 			if (text.startsWith("Category:")) {
 				String c = catPat.matcher(ltext).replaceAll("$1").trim();
 				if (c.length()>0)
