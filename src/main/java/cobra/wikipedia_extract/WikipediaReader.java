@@ -4,6 +4,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.util.Iterator;
+import java.util.Map;
 import java.util.Stack;
 
 import javax.xml.stream.XMLInputFactory;
@@ -27,6 +28,7 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 	private int LIMIT =  Integer.MAX_VALUE;
 	private int c = 0;
 	private boolean hasNext = true;
+	private Map<String, Boolean> okTypes;
 
 	public WikipediaReader(File src) throws FileNotFoundException, XMLStreamException {
 		XMLInputFactory factory = XMLInputFactory.newInstance();
@@ -46,6 +48,7 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 					parentage.push(reader.getLocalName());
 					if ("page".equals(reader.getLocalName())) {
 						currArticle = new Article(c++);
+						currArticle.setOkTypes(okTypes);
 					}
 					break;
 
@@ -93,7 +96,7 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 		} catch (XMLStreamException e) {
 			logger.error(e.getMessage());
 		}
-		return new Article();
+		return new Article(0,okTypes);
 	}
 
 	public Iterator<Article> iterator() {
@@ -113,5 +116,9 @@ public class WikipediaReader implements Iterable<Article>, Iterator<Article> {
 
 	public void setLIMIT(int lIMIT) {
 		LIMIT = lIMIT;
+	}
+
+	public void setOkTypes(String ... types) {
+		this.okTypes = Constants.makeOkTypes(types);
 	}
 }

@@ -2,6 +2,8 @@ package cobra.wikipedia_extract.batch;
 
 import java.io.File;
 import java.io.IOException;
+import java.util.HashMap;
+import java.util.Map;
 
 import javax.xml.stream.XMLStreamException;
 
@@ -26,6 +28,14 @@ public class WikiSplit {
 	private final static Logger logger = LoggerFactory.getLogger(WikiSplit.class);
 	private static final int MAX = Integer.MAX_VALUE; 
 //	private static final int MAX = 100;  
+	private static Map<String, Boolean> okTypes;
+
+	static {
+		okTypes = new HashMap<>();
+		okTypes.put("0", true);
+		okTypes.put("14", true);
+		okTypes.put("2600", true);
+	}
 	
 
 	public static void main(String[] args) throws XMLStreamException, IOException {
@@ -37,6 +47,7 @@ public class WikiSplit {
 		File outP = new File(args[1]);
 		outP.mkdirs();
 		WikipediaReader reader = new WikipediaReader(src);
+		reader.setOkTypes("0","14","2600");
  		Article p;
  		int c=0;
 		while (c<MAX && reader.hasNext()) {
@@ -48,7 +59,7 @@ public class WikiSplit {
 					File outF = new File(outP.getPath() + '/' + p.fn());
 					IO.putContent(outF, p.sout());
 					if (p.counter%1000==0)
-						logger.info("{}",p.counter);
+						System.out.println(""+p.counter);
 //					File moutF = new File(outP.getPath() + '/' + p.id + ".mk.txt");
 //					IO.putContent(moutF, p.markup);
 					File coutF = new File(outP.getPath() + '/' + p.id + ".cat.txt");

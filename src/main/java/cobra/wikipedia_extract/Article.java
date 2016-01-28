@@ -1,7 +1,6 @@
 package cobra.wikipedia_extract;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.regex.Pattern;
@@ -13,7 +12,8 @@ public class Article {
 	private final static Logger logger = LoggerFactory.getLogger(Article.class);
 	private static Pattern excludeTest = Pattern.compile("^#redirect.*", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
 	private static Pattern catPat = Pattern.compile("^.*?category:.*$", Pattern.CASE_INSENSITIVE | Pattern.DOTALL);
-	private static Map<String, String> types;
+
+	private Map<String,Boolean> okTypes;
 	private WikiParser stripper = new WikiParser();
 	private static ArrayList<PatRep> prePatterns;
 	static {
@@ -34,45 +34,8 @@ public class Article {
 //		postPatterns.add(new PatRep("^.+\\}\\}", ""));
 	}
 
-	static {
-		types = new HashMap<>();
-		types.put("-2", "Media");
-		types.put("-1", "Special");
-		types.put("0", "Article");
-		types.put("1", "Talk");
-		types.put("2", "User");
-		types.put("3", "User talk");
-		types.put("4", "Wikipedia");
-		types.put("5", "Wikipedia talk");
-		types.put("6", "File");
-		types.put("7", "File talk");
-		types.put("8", "MediaWiki");
-		types.put("9", "MediaWiki talk");
-		types.put("10", "Template");
-		types.put("11", "Template talk");
-		types.put("12", "Help");
-		types.put("13", "Help talk");
-		types.put("14", "Category");
-		types.put("15", "Category talk");
-		types.put("828", "Module");
-		types.put("829", "Module talk");
-		types.put("2300", "Gadget");
-		types.put("2301", "Gadget talk");
-		types.put("2302", "Gadget definition");
-		types.put("2303", "Gadget definition talk");
-		types.put("2600", "Topic");
-	}
 
-	private static Map<String, Boolean> okTypes;
-
-	static {
-		okTypes = new HashMap<>();
-		okTypes.put("0", true);
-		okTypes.put("14", true);
-		okTypes.put("2600", true);
-	}
-
-	private List<String> categories;
+	public List<String> categories;
 	public int counter=0;
 	public int id;
 	public String title;
@@ -84,7 +47,9 @@ public class Article {
 	public Article(int c) {
 		this.counter = c;
 	}
-	public Article() {
+	public Article(int c, Map<String,Boolean> okTypes) {
+		this.counter = c;
+		this.okTypes=okTypes;
 	}
 	public boolean keep() {
 		if (markup==null)
@@ -102,7 +67,7 @@ public class Article {
 				sb.append("\n");
 			sb.append(cat);
 		}
-		logger.debug("Categories: {}", sb.toString());
+//		logger.debug("Categories: {}", sb.toString());
 		return sb.toString();
 	}
 
@@ -132,6 +97,10 @@ public class Article {
 	public String fn() {
 		return id + ".txt";
 	}
+	public String getTitleCat() {
+		String cat = title.replace("Category:","");
+		return cat.trim().toLowerCase();
+	}
 	public String out() {
 		this.preParse();
 		this.parse();
@@ -154,8 +123,11 @@ public class Article {
 
 	public String mout() {
 		return id + "\n" + 
-				types.get(type) + "\n" + 
+				Constants.types.get(type) + "\n" + 
 				title + "\n\n" + 
 				markup;
+	}
+	public void setOkTypes(Map<String, Boolean> okTypes) {
+		this.okTypes = okTypes;
 	}
 }

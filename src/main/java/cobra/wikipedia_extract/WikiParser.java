@@ -59,6 +59,7 @@ import org.slf4j.LoggerFactory;
 				}
 			} catch (IOException e) {
 				logger.error(e.getMessage());
+				logger.error(IO.trace(e));
 			}
 		}
 		public void parseByLanguage(int id, String text) {
@@ -73,7 +74,7 @@ import org.slf4j.LoggerFactory;
 				}
 			} catch (IOException e) {
 				logger.error(e.getMessage());
-				logger.debug("{}",IO.trace(e));
+				logger.error(IO.trace(e));
 			}
 		}
 		public void parseToHTML(int id, String text) {
@@ -88,7 +89,7 @@ import org.slf4j.LoggerFactory;
 				}
 			} catch (IOException e) {
 				logger.error(e.getMessage());
-				logger.debug("{}",IO.trace(e));
+				logger.error(IO.trace(e));
 			}
 		}
 		public void writeText(File p) throws IOException {
@@ -108,7 +109,7 @@ import org.slf4j.LoggerFactory;
 		@Override
 		public void beginBlock(BlockType type, Attributes attributes) {
 			++blockDepth;
-			logger.debug("BLOCK START[" + blockDepth + "]:" + type+" - "+attributes.getTitle()); //$NON-NLS-1$ //$NON-NLS-2$
+//			logger.debug("BLOCK START[" + blockDepth + "]:" + type+" - "+attributes.getTitle()); //$NON-NLS-1$ //$NON-NLS-2$
 			this.addEOS();
 		}
 
@@ -120,18 +121,18 @@ import org.slf4j.LoggerFactory;
 
 		@Override
 		public void beginHeading(int level, Attributes attributes) {
-			logger.debug("HEADING START:" + level); //$NON-NLS-1$
+//			logger.debug("HEADING START:" + level); //$NON-NLS-1$
 			this.addEOS();
 		}
 
 		@Override
 		public void beginSpan(SpanType type, Attributes attributes) {
-			logger.debug("SPAN START:" + type); //$NON-NLS-1$
+//			logger.debug("SPAN START:" + type); //$NON-NLS-1$
 		}
 
 		@Override
 		public void characters(String text) {
-			logger.debug("CHARACTERS:" + text); //$NON-NLS-1$
+//			logger.debug("CHARACTERS:" + text); //$NON-NLS-1$
 			articleText.append(text);
 		}
 
@@ -142,25 +143,25 @@ import org.slf4j.LoggerFactory;
 
 		@Override
 		public void endBlock() {
-			logger.debug("END BLOCK[" + blockDepth + "]"); //$NON-NLS-1$ //$NON-NLS-2$
+//			logger.debug("END BLOCK[" + blockDepth + "]"); //$NON-NLS-1$ //$NON-NLS-2$
 			this.addEOS();
 			--blockDepth;
 		}
 
 		@Override
 		public void endDocument() {
-			logger.debug("END DOCUMENT"); //$NON-NLS-1$
+//			logger.debug("END DOCUMENT"); //$NON-NLS-1$
 		}
 
 		@Override
 		public void endHeading() {
-			logger.debug("END HEADING"); //$NON-NLS-1$
+//			logger.debug("END HEADING"); //$NON-NLS-1$
 			this.addEOS();
 		}
 
 		@Override
 		public void endSpan() {
-			logger.debug("END SPAN"); //$NON-NLS-1$
+//			logger.debug("END SPAN"); //$NON-NLS-1$
 		}
 
 		@Override
@@ -171,30 +172,30 @@ import org.slf4j.LoggerFactory;
 
 		@Override
 		public void image(Attributes attributes, String url) {
-			logger.debug("IMAGE: " + url); //$NON-NLS-1$
+//			logger.debug("IMAGE: " + url); //$NON-NLS-1$
 		}
 
 		@Override
 		public void imageLink(Attributes linkAttributes, Attributes imageAttributes, String href, String imageUrl) {
-			logger.debug("IMAGE LINK: " + href + ", " + imageUrl); //$NON-NLS-1$ //$NON-NLS-2$
+//			logger.debug("IMAGE LINK: " + href + ", " + imageUrl); //$NON-NLS-1$ //$NON-NLS-2$
 
 		}
 
 		@Override
 		public void lineBreak() {
-			logger.debug("LINE BREAK"); //$NON-NLS-1$
+//			logger.debug("LINE BREAK"); //$NON-NLS-1$
 		}
 
 		@Override
 		public void link(Attributes attributes, String hrefOrHashName, String text) {
-			logger.debug("LINK: "+text); //$NON-NLS-1$ //$NON-NLS-2$
+//			logger.debug("LINK: "+text); //$NON-NLS-1$ //$NON-NLS-2$
 			String[] tk = text.split("\\|");
 			String ltext = tk[tk.length-1];
-			logger.debug("Link Value: "+ltext); //$NON-NLS-1$ //$NON-NLS-2$
+//			logger.debug("Link Value: "+ltext); //$NON-NLS-1$ //$NON-NLS-2$
 			if (text.startsWith("Category:")) {
 				String c = catPat.matcher(ltext).replaceAll("$1").trim();
 				if (c.length()>0)
-					categories.add(c);
+					categories.add(c.toLowerCase().replaceAll("\\p{Cntrl}", "").replaceAll("[^\\p{Print}]", ""));
 			} else {
 				articleText.append(ltext);
 			}
