@@ -19,8 +19,6 @@ import org.slf4j.LoggerFactory;
  */
 public class CatCollector {
 	final static Logger logger = LoggerFactory.getLogger(CatCollector.class);
-	// This map is an inversion - we get the entries by category with a list of parents.
-	// We store in this tree by parent with a list of parents and list of children 
 	private Map<String, Category> categories;
 	private Set<String> roots;
 
@@ -47,7 +45,7 @@ public class CatCollector {
 		}
 		for (String parent : parents) {
 			if (categories.containsKey(parent)) {
-				logger.debug("Adding as child to parent {}: {}",parent,cat);
+//				logger.debug("Adding as child to parent {}: {}",parent,cat);
 				categories.get(parent).addChild(cat);
 			} else {
 				categories.put(parent, new Category(parent));
