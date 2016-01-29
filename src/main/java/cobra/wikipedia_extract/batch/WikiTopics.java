@@ -24,8 +24,8 @@ import cobra.wikipedia_extract.WikipediaReader;
  */
 public class WikiTopics {
 	private final static Logger logger = LoggerFactory.getLogger(WikiTopics.class);
-//	private static final int MAX = Integer.MAX_VALUE; 
-	private static final int MAX = 10000;  
+	private static final int MAX = Integer.MAX_VALUE; 
+//	private static final int MAX = 10000;  
 
 	public static void main(String[] args) throws XMLStreamException, IOException {
 		logger.info("Starting Wikipedia Topic Extract {}", args[0]);
@@ -33,8 +33,6 @@ public class WikiTopics {
 		StopWatch stopWatch = new StopWatch();
 		stopWatch.start();
 		File src = new File(args[0]);
-		File outP = new File(args[1]);
-		outP.mkdirs();
 		WikipediaReader reader = new WikipediaReader(src);
 		reader.setOkTypes("14","2600");
  		Article p;
@@ -42,16 +40,10 @@ public class WikiTopics {
  		int c=0;
 		while (c<MAX && reader.hasNext()) {
 			p = reader.next();
-//			logger.debug("Article: {}", p);
 			if (p.keep()) {
 				try {
-//					logger.debug("Article: {} - {}",p.id, p.title);
 					p.parse();
 					cats.addCategory(p.getTitleCat(), p.categories);
-//					File outF = new File(outP.getPath() + '/' + p.fn());
-//					IO.putContent(outF, p.getTitleCat());
-//					File coutF = new File(outP.getPath() + '/' + p.id + ".cat.txt");
-//					IO.putContent(coutF, p.getCategories());
 					c++;
 					logger.debug("\n");
 				} catch (Exception e) {
@@ -59,9 +51,6 @@ public class WikiTopics {
 					logger.error(IO.trace(e));
 					System.exit(1);
 				}
-			} else {
-				// logger.info("Ignoring article: {}",currArticle.toString());
-				// logger.info(currArticle.text);
 			}
 			if (c%1000==0)
 				System.out.println(""+p.counter);

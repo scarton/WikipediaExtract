@@ -20,13 +20,13 @@ public class Category {
 	 * @param parents
 	 */
 	public Category(String cat) {
-		logger.debug("New topic/category: {}",cat);
+//		logger.debug("New topic/category: {}",cat);
 		this.category=cat;
 	}
 	public void addParents(List<String> parents) {
-		logger.debug("Adding parents to cat: {} - {}",this.category, parents);
+//		logger.debug("Adding parents to cat: {} - {}",this.category, parents);
 		if (parents == null || parents.size()==0) {
-			logger.debug("Root Category: {}",this.category);
+//			logger.debug("Root Category: {}",this.category);
 			isRoot=true;
 		} else {
 			for (String parent : parents) {
@@ -35,7 +35,7 @@ public class Category {
 		}
 	}
 	public void addChild(String cat) {
-		logger.debug("Adding child to cat: {} - {}",this.category, cat);
+//		logger.debug("Adding child to cat: {} - {}",this.category, cat);
 		this.children.add(cat);
 	}
 	public String toString() {
