@@ -12,24 +12,24 @@ import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import com.google.common.base.Joiner;
+
 public class SolrIndexer {
 	final static Logger logger = LoggerFactory.getLogger(SolrIndexer.class);
 	private HttpSolrClient server;
 	public SolrIndexer(String baseURL) {
 		server = new HttpSolrClient(baseURL);
 	}
-	public void index(String text, String id, String guid) throws IOException, SolrServerException {
-		index(text,id, guid, null, null);
+	public void index(String text, String guid) throws IOException, SolrServerException {
+		index(text, guid, null);
 	}
-	public void index(String text, String id, String guid, String cleanText, List<String> terms) throws SolrServerException, IOException {
+	public void index(String text, String guid, List<String> categories) throws SolrServerException, IOException {
 		SolrInputDocument  doc = new SolrInputDocument ();
 		doc.addField("doctext", text);
-		doc.addField("cleantext", cleanText);
-		doc.addField("docid", id);
 		doc.addField("guid", guid);
-		if (terms!=null) {
-			doc.addField("_terms_", terms);
-//			logger.debug("{}",Joiner.on(", ").join(terms));
+		if (categories!=null) {
+			doc.addField("categories", categories);
+			logger.debug("{}",Joiner.on(", ").join(categories));
 		}
 		server.add(doc);
 	}
