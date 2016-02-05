@@ -40,7 +40,7 @@ public class WikiIndex {
 		File srcF = new File(args[0]);
 		File[] listOfFiles = srcF.listFiles(
 				(File file) -> !file.getName().endsWith (".cat.txt") && file.getName().endsWith(".txt"));
-		for (int i = 0; i< Math.min(100, listOfFiles.length); i++) {
+		for (int i = 0; i< Math.min(1000, listOfFiles.length); i++) {
 			if (listOfFiles[i].isFile()) {
 				logger.debug("File " + listOfFiles[i].getName());
 				String text = FileUtils.readFileToString(listOfFiles[i]);
